@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You <3</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #fce4ec;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Bekas Bunga Jatuh */
+        #flower-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        /* Bekas Utama */
+        .wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-card-area {
+            position: relative;
+            width: 100%;
+            height: 480px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Bekas Surat di Tengah */
+        .container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        /* Sampul Surat */
+        .envelope {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            background: #e91e63;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            z-index: 2;
+        }
+
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #c2185b;
+            transform-origin: top;
+            transition: transform 0.5s ease;
+            z-index: 4;
+        }
+
+        .heart-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            background: #fff;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 22px;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Kad Surat */
+        .letter {
+            position: absolute;
+            width: 290px;
+            max-height: 400px;
+            background: #ffffff;
+            padding: 25px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            transition: opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s;
+            z-index: 10;
+            overflow-y: auto;
+            pointer-events: none;
+            cursor: pointer;
+        }
+
+        .letter h2 {
+            font-family: 'Great Vibes', cursive;
+            color: #d81b60;
+            font-size: 30px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .letter p {
+            color: #444;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .letter .signature {
+            margin-top: 15px;
+            text-align: right;
+            font-weight: 500;
+            color: #c2185b;
+            font-family: 'Great Vibes', cursive;
+            font-size: 24px;
+        }
+
+        /* Gaya Asas Polaroid */
+        .polaroid {
+            position: absolute;
+            width: 160px;
+            background: #ffffff;
+            padding: 8px 8px 14px 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .polaroid .caption {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #333;
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            width: 40px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Animasi Buka Surat */
+        .container.open .envelope::before {
+            transform: rotateX(180deg);
+        }
+
+        .container.open .heart-seal {
+            opacity: 0;
+        }
+
+        .container.open .envelope {
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+            pointer-events: none;
+        }
+
+        .container.open .letter {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* --- KEDUDUKAN POLAROID PADA SKRIN KOMPUTER (DESKTOP) --- */
+        .polaroid.show.p1 {
+            opacity: 1;
+            transform: translate(-250px, -40px) rotate(-10deg) scale(1);
+            transition-delay: 0.1s;
+            pointer-events: auto;
+            z-index: 25;
+        }
+
+        .polaroid.show.p2 {
+            opacity: 1;
+            transform: translate(250px, -20px) rotate(10deg) scale(1);
+            transition-delay: 0.3s;
+            pointer-events: auto;
+            z-index: 25;
+        }
+
+        .polaroid.show.p3 {
+            opacity: 1;
+            transform: translate(-180px, 140px) rotate(8deg) scale(1);
+            transition-delay: 0.5s;
+            pointer-events: auto;
+            z-index: 25;
+        }
+
+        /* Arahan Teks */
+        .instruction {
+            position: absolute;
+            bottom: 30px;
+            text-align: center;
+            color: #880e4f;
+            font-size: 13px;
+            font-weight: 500;
+            animation: bounce 1.5s infinite;
+            transition: opacity 0.3s;
+            padding: 0 20px;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Kesan Bunga Jatuh */
+        .flower {
+            position: absolute;
+            top: -30px;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 0.2;
+            }
+        }
+
+        /* --- KHAS UNTUK SKRIN TELEFON BIMBIT (MOBILE RESPONSIVE) --- */
+        @media (max-width: 600px) {
+            .main-card-area {
+                height: 520px;
+            }
+
+            .container {
+                width: 260px;
+                height: 180px;
+            }
+
+            .envelope {
+                width: 260px;
+                height: 180px;
+            }
+
+            .envelope::before {
+                border-left: 130px solid transparent;
+                border-right: 130px solid transparent;
+                border-top: 95px solid #c2185b;
+            }
+
+            .letter {
+                width: 250px;
+                max-height: 360px;
+                padding: 20px 15px;
+            }
+
+            .letter h2 {
+                font-size: 26px;
+            }
+
+            .letter p {
+                font-size: 12px;
+            }
+
+            .polaroid {
+                width: 110px;
+                padding: 6px 6px 10px 6px;
+            }
+
+            .polaroid img {
+                height: 85px;
+            }
+
+            .polaroid .caption {
+                font-size: 12px;
+            }
+
+            /* Kedudukan Polaroid Disesuaikan Agar Tidak Keluar Skrin Telefon */
+            .polaroid.show.p1 {
+                transform: translate(-95px, -150px) rotate(-12deg) scale(1);
+            }
+
+            .polaroid.show.p2 {
+                transform: translate(95px, -150px) rotate(12deg) scale(1);
+            }
+
+            .polaroid.show.p3 {
+                transform: translate(85px, 130px) rotate(-8deg) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bekas Bunga Jatuh -->
+    <div id="flower-container"></div>
+
+    <div class="wrapper">
+        <div class="main-card-area">
+            
+            <!-- Polaroid 1 (Kiri Atas) -->
+            <div class="polaroid p1" id="p1">
+                <img src="gambar1.jpeg" alt="Gambar 1">
+                <div class="caption"></div>
+            </div>
+
+            <!-- Surat di Tengah -->
+            <div class="container" id="cardContainer" onclick="openLetter()">
+                <!-- Sampul -->
+                <div class="envelope">
+                    <div class="heart-seal">💌</div>
+                </div>
+
+                <!-- Kad Surat -->
+                <div class="letter" id="letterCard" onclick="showPolaroids()">
+                    <h2>Untuk Nia<3</h2>
+                    <p>haiii you, hihihi i nak cakap sikit, you ada fikir yang kita akan lost contactkan? hahaha jangan laa fikir benda - benda negatif, fikir je yang positif. I akan berusaha untuk fahamkan apa masalah yang you tengah hadap, sekurang - kurangnya saya dapat tolong awak sikit. If kalau tiba - tiba kita lost contact, anggap je la yang pertemuan kita ni mesti ada sebab, jangan salahkan diri you okay?? 
+                    Inshaallah I try rapat dengan you and tak tinggalkan you. I can't to promise about this, sebab apa - apa masalah boleh je terjadi. Kita tak dapat nak menjangka yang benda tu akan jadi. Jadinya i try to be your favourite person🙇🤍. So tu je hihihi, babaiiiiii lopyuu🫪🤍</p>
+                    <div class="signature">Daripada Nabil ❤️</div>
+                </div>
+            </div>
+
+            <!-- Polaroid 2 (Kanan Atas) -->
+            <div class="polaroid p2" id="p2">
+                <img src="gambar2.jpeg" alt="Gambar 2">
+                <div class="caption"></div>
+            </div>
+
+            <!-- Polaroid 3 (Kanan Bawah) -->
+            <div class="polaroid p3" id="p3">
+                <img src="gambar3.jpeg" alt="Gambar 3">
+                <div class="caption"></div>
+            </div>
+
+        </div>
+
+        <div class="instruction" id="instructionText">Tekan sampul ni you!!</div>
+    </div>
+
+    <!-- Audio Latar Belakang -->
+    <audio id="bgMusic" loop>
+        <source src="it s you (speed up).mp3" type="audio/mp3">
+        Pelayar anda tidak menyokong elemen audio.
+    </audio>
+
+    <script>
+        let isOpen = false;
+        let isPolaroidShown = false;
+        let flowerInterval;
+
+        function openLetter() {
+            if (!isOpen) {
+                const container = document.getElementById('cardContainer');
+                const music = document.getElementById('bgMusic');
+                const instruction = document.getElementById('instructionText');
+
+                // Buka sampul
+                container.classList.add('open');
+                instruction.innerHTML = 'Tekan lagi sekali you!! 📸';
+                
+                // Mainkan muzik
+                music.play().catch(error => console.log("Autoplay disekat:", error));
+
+                // Mulakan hujan bunga
+                startContinuousFlowers();
+
+                isOpen = true;
+            }
+        }
+
+        function showPolaroids() {
+            if (isOpen && !isPolaroidShown) {
+                const p1 = document.getElementById('p1');
+                const p2 = document.getElementById('p2');
+                const p3 = document.getElementById('p3');
+                const instruction = document.getElementById('instructionText');
+
+                // Tampilkan kesemua polaroid
+                p1.classList.add('show');
+                p2.classList.add('show');
+                p3.classList.add('show');
+                
+                instruction.style.opacity = '0'; // Sembunyikan arahan
+                
+                isPolaroidShown = true;
+            }
+        }
+
+        // Fungsi Bunga Jatuh
+        function createFlower() {
+            const container = document.getElementById('flower-container');
+            const flower = document.createElement('div');
+            const flowers = ['🌸', '💮', '🌺', '🌷'];
+            
+            flower.classList.add('flower');
+            flower.innerText = flowers[Math.floor(Math.random() * flowers.length)];
+            
+            flower.style.left = Math.random() * 100 + 'vw';
+            flower.style.fontSize = (Math.random() * 12 + 12) + 'px';
+            
+            const duration = Math.random() * 4 + 4;
+            flower.style.animationDuration = duration + 's';
+
+            container.appendChild(flower);
+
+            setTimeout(() => {
+                flower.remove();
+            }, duration * 1000);
+        }
+
+        function startContinuousFlowers() {
+            flowerInterval = setInterval(createFlower, 300);
+        }
+    </script>
+</body>
+</html>
